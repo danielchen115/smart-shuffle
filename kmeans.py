@@ -13,17 +13,20 @@ sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 
 NUM_CLUSTERS = 4
 
+
 def generate_clusters(playlist_id):
     tracks = s.get_playlist_tracks(sp, playlist_id)
     s.set_track_features(sp, tracks)
     matrix = s.tracks_to_matrix(tracks)
     data_normalized = normalize(matrix["data"])
     kmeans = KMeans(n_clusters=NUM_CLUSTERS).fit(data_normalized)
-    clusters = kmeans.predict(matrix["data"])
+    pred_clusters = kmeans.predict(matrix["data"])
+    clusters = []
     for cluster in range(NUM_CLUSTERS):
-        print('cluster: ', cluster)
-        print(np.array(matrix["labels"])[np.where(clusters == cluster)])
+        clusters.append((np.array(matrix["labels"])[np.where(pred_clusters == cluster)]).tolist())
+    return clusters
 
 
 if __name__ == "__main__":
-    generate_clusters("1rRd3sbV22wzxF4crXauTF")
+    clusters = generate_clusters("1rRd3sbV22wzxF4crXauTF")
+    print(clusters)

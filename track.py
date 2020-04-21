@@ -19,14 +19,15 @@ class Track:
                 setattr(self, key, features[key])
 
     def get_features(self):
+        # Adjusted based on empirical best results
         return [
             self.danceability,
             self.energy,
             self.acousticness,
             self.valence,
             self.instrumentalness,
-            self.liveness,
-            self.loudness,
+            # self.liveness,
+            # self.loudness,
             self.speechiness,
-            self.tempo,
+            # self.tempo,
         ]
