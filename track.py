@@ -17,3 +17,16 @@ class Track:
         for key in features:
             if hasattr(self, key):
                 setattr(self, key, features[key])
+
+    def get_features(self):
+        return [
+            self.danceability,
+            self.energy,
+            self.acousticness,
+            self.valence,
+            self.instrumentalness,
+            self.liveness,
+            self.loudness,
+            self.speechiness,
+            self.tempo,
+        ]
