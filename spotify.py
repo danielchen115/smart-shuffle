@@ -34,9 +34,3 @@ def tracks_to_matrix(tracks):
         matrix["labels"].append(track.name)
         matrix["data"].append(track.get_features())
     return matrix
-
-if __name__ == "__main__":
-    tracks = get_playlist_tracks(sp, "3MJLRcooXv6V51PHcqdlIY")
-    set_track_features(sp, tracks)
-    matrix = tracks_to_matrix(tracks)
-    print("hit")

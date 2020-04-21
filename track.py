@@ -1,17 +1,17 @@
 class Track:
-    danceability = 0
-    energy = 0
-    acousticness = 0
-    valence = 0
-    instrumentalness = 0
-    liveness = 0
-    loudness = 0
-    speechiness = 0
-    tempo = 0
-
     def __init__(self, id, name):
         self.id = id
         self.name = name
+
+        self.danceability = 0
+        self.energy = 0
+        self.acousticness = 0
+        self.valence = 0
+        self.instrumentalness = 0
+        self.liveness = 0
+        self.loudness = 0
+        self.speechiness = 0
+        self.tempo = 0
 
     def set_features(self, features):
         for key in features:
