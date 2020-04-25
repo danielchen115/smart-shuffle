@@ -9,8 +9,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
-
 NUM_CLUSTERS = 4
 
 
@@ -25,14 +23,16 @@ class Cluster:
 
 
 class ClusterCollection:
-    def __init__(self):
+    def __init__(self, playlist_id):
         self.clusters = []
-        self.curr_i = -1
+        self.curr_i = 0
+        self.sp = s.Spotify()
+        self.generate_clusters(playlist_id)
 
     def generate_clusters(self, playlist_id):
-        tracks = s.get_playlist_tracks(sp, playlist_id)
-        s.set_track_features(sp, tracks)
-        matrix = s.tracks_to_matrix(tracks)
+        tracks = self.sp.get_playlist_tracks(playlist_id)
+        self.sp.set_track_features(tracks)
+        matrix = self.sp.tracks_to_matrix(tracks)
         data_normalized = normalize(matrix["data"])
         kmeans = KMeans(n_clusters=NUM_CLUSTERS).fit(data_normalized)
         pred_clusters = kmeans.predict(matrix["data"])
@@ -61,3 +61,10 @@ class ClusterCollection:
         for cluster in self.clusters:
             q.extend(cluster.tracks)
         return q
+
+
+if __name__ == "__main__":
+    col = ClusterCollection("0ZHdYdAKTl3hxNUGvhBki6")
+    q = col.create_track_queue()
+    clusters = col.clusters
+    print("asd")
