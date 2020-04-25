@@ -23,14 +23,14 @@ class Cluster:
 
 
 class ClusterCollection:
-    def __init__(self, playlist_id):
+    def __init__(self, playlist: s.Playlist):
         self.clusters = []
         self.curr_i = 0
         self.sp = s.Spotify()
-        self.generate_clusters(playlist_id)
+        self.generate_clusters(playlist)
 
-    def generate_clusters(self, playlist_id):
-        tracks = self.sp.get_playlist_tracks(playlist_id)
+    def generate_clusters(self, playlist_id: s.Playlist):
+        tracks = playlist.get_playlist_tracks()
         self.sp.set_track_features(tracks)
         matrix = self.sp.tracks_to_matrix(tracks)
         data_normalized = normalize(matrix["data"])
@@ -64,7 +64,7 @@ class ClusterCollection:
 
 
 if __name__ == "__main__":
-    col = ClusterCollection("0ZHdYdAKTl3hxNUGvhBki6")
+    playlist = s.Playlist("0ZHdYdAKTl3hxNUGvhBki6")
+    col = ClusterCollection(playlist)
     q = col.create_track_queue()
     clusters = col.clusters
-    print("asd")

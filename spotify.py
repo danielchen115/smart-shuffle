@@ -7,16 +7,30 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-class Spotify:
-    def __init__(self):
+class Playlist:
+    def __init__(self, playlist_id):
         self.sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
+        self.playlist_id = playlist_id
+        self.__load_playlist(playlist_id)
 
-    def get_playlist_tracks(self, playlist_id):
+    def __load_playlist(self, playlist_id):
+        playlist = self.sp.playlist(playlist_id)
+        self.name = playlist["name"]
+        self.owner = playlist["owner"]
+        self.tracks = playlist["tracks"]
+        self.uri = playlist["uri"]
+
+    def get_playlist_tracks(self):
         tracks = {}
-        track_objects = self.sp.playlist_tracks(playlist_id=playlist_id, fields="items(track(id,name))")["items"]
+        track_objects = self.sp.playlist_tracks(playlist_id=self.playlist_id, fields="items(track(id,name))")["items"]
         for track_obj in track_objects:
             tracks[track_obj["track"]["id"]] = track.Track(track_obj["track"]["id"], track_obj["track"]["name"])
         return tracks
+
+
+class Spotify:
+    def __init__(self):
+        self.sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 
     def set_track_features(self, tracks):
         track_ids = list(tracks.keys())
@@ -34,3 +48,18 @@ class Spotify:
             matrix["labels"].append(track.name)
             matrix["data"].append(track.get_features())
         return matrix
+
+    def get_playlists(self):
+        playlists_objects = self.sp.current_user_playlists()["items"]
+        playlists = {}
+        for playlist in playlists_objects:
+            playlists[playlist["id"]] = {
+                "uri": playlist["uri"],
+                "name": playlist["name"],
+                "tracks": playlist["tracks"]["total"],
+                "owner": playlist["owner"]["display_name"]
+            }
+        return playlists
+
+if __name__ == "__main__":
+    playlist = Playlist("0ZHdYdAKTl3hxNUGvhBki6")
