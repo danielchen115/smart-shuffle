@@ -1,19 +1,27 @@
 import os
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
-import track
+from track import Track
 from dotenv import load_dotenv
+from typing import Dict
 
 load_dotenv()
 
 
 class Playlist:
-    def __init__(self, playlist_id):
-        self.sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
+    sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
+
+    def __init__(self, playlist_id: str):
         self.playlist_id = playlist_id
         self.__load_playlist(playlist_id)
+        self.played = set()
 
-    def __load_playlist(self, playlist_id):
+    @classmethod
+    def new(cls, name: str, user: str):
+        res = cls.sp.user_playlist_create(user, name)
+        return Playlist(res["id"])
+
+    def __load_playlist(self, playlist_id: str):
         playlist = self.sp.playlist(playlist_id)
         self.name = playlist["name"]
         self.owner = playlist["owner"]
@@ -24,7 +32,7 @@ class Playlist:
         tracks = {}
         track_objects = self.sp.playlist_tracks(playlist_id=self.playlist_id, fields="items(track(id,name))")["items"]
         for track_obj in track_objects:
-            tracks[track_obj["track"]["id"]] = track.Track(track_obj["track"]["id"], track_obj["track"]["name"])
+            tracks[track_obj["track"]["id"]] = Track(track_obj["track"]["id"], track_obj["track"]["name"])
         return tracks
 
 
@@ -32,7 +40,7 @@ class Spotify:
     def __init__(self):
         self.sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 
-    def set_track_features(self, tracks):
+    def set_track_features(self, tracks: Dict[str, Track]):
         track_ids = list(tracks.keys())
         features = []
         chunks = [track_ids[i * 100:(i + 1) * 100] for i in range((len(track_ids) + 100 - 1) // 100)]
@@ -60,6 +68,7 @@ class Spotify:
                 "owner": playlist["owner"]["display_name"]
             }
         return playlists
+
 
 if __name__ == "__main__":
     playlist = Playlist("0ZHdYdAKTl3hxNUGvhBki6")

@@ -1,19 +1,14 @@
 from collections import deque
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import normalize
-import spotipy
 import spotify as s
 import numpy as np
-from spotipy.oauth2 import SpotifyClientCredentials
-from dotenv import load_dotenv
-
-load_dotenv()
 
 NUM_CLUSTERS = 4
 
 
 class Cluster:
-    def __init__(self, location, tracks):
+    def __init__(self, location, tracks: set):
         self.score = 0
         self.location = location
         self.tracks = tracks
@@ -29,7 +24,7 @@ class ClusterCollection:
         self.sp = s.Spotify()
         self.generate_clusters(playlist)
 
-    def generate_clusters(self, playlist_id: s.Playlist):
+    def generate_clusters(self, playlist: s.Playlist):
         tracks = playlist.get_playlist_tracks()
         self.sp.set_track_features(tracks)
         matrix = self.sp.tracks_to_matrix(tracks)
@@ -39,10 +34,10 @@ class ClusterCollection:
         centers = kmeans.cluster_centers_
         for cluster in range(NUM_CLUSTERS):
             new_cluster = Cluster(centers[cluster],
-                                  (np.array(matrix["labels"])[np.where(pred_clusters == cluster)]).tolist())
+                                  set((np.array(matrix["labels"])[np.where(pred_clusters == cluster)]).tolist()))
             self.clusters.append(new_cluster)
 
-    def update_scores(self, portion_played):
+    def update_scores(self, portion_played: float):
         portion_left = 1 - portion_played
         for cluster in self.clusters:
             cluster.score += portion_left * cluster.get_distance(self.clusters[self.curr_i])
@@ -64,7 +59,8 @@ class ClusterCollection:
 
 
 if __name__ == "__main__":
-    playlist = s.Playlist("0ZHdYdAKTl3hxNUGvhBki6")
-    col = ClusterCollection(playlist)
+    pl = s.Playlist("0ZHdYdAKTl3hxNUGvhBki6")
+    col = ClusterCollection(pl)
     q = col.create_track_queue()
     clusters = col.clusters
+    print("hit")
