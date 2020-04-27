@@ -1,9 +1,8 @@
-import os
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from track import Track
 from dotenv import load_dotenv
-from typing import Dict
+from typing import Dict, List
 
 load_dotenv()
 
@@ -28,12 +27,15 @@ class Playlist:
         self.tracks = playlist["tracks"]
         self.uri = playlist["uri"]
 
-    def get_playlist_tracks(self):
+    def get_tracks(self):
         tracks = {}
         track_objects = self.sp.playlist_tracks(playlist_id=self.playlist_id, fields="items(track(id,name))")["items"]
         for track_obj in track_objects:
             tracks[track_obj["track"]["id"]] = Track(track_obj["track"]["id"], track_obj["track"]["name"])
         return tracks
+
+    def replace_tracks(self, track_ids: List[str]):
+        self.sp.user_playlist_replace_tracks(self.owner, self.playlist_id, track_ids)
 
 
 class Spotify:
