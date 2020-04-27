@@ -20,6 +20,19 @@ class Playlist:
         res = cls.sp.user_playlist_create(user, name)
         return Playlist(res["id"])
 
+    @staticmethod
+    def all(self):
+        playlist_objects = self.sp.current_user_playlists()["items"]
+        playlists = {}
+        for playlist in playlist_objects:
+            playlists[playlist["id"]] = {
+                "uri": playlist["uri"],
+                "name": playlist["name"],
+                "tracks": playlist["tracks"]["total"],
+                "owner": playlist["owner"]["display_name"]
+            }
+        return playlists
+
     def __load_playlist(self, playlist_id: str):
         playlist = self.sp.playlist(playlist_id)
         self.name = playlist["name"]
@@ -59,18 +72,6 @@ class Spotify:
             matrix["data"].append(track.get_features())
         return matrix
 
-    def get_playlists(self):
-        playlists_objects = self.sp.current_user_playlists()["items"]
-        playlists = {}
-        for playlist in playlists_objects:
-            playlists[playlist["id"]] = {
-                "uri": playlist["uri"],
-                "name": playlist["name"],
-                "tracks": playlist["tracks"]["total"],
-                "owner": playlist["owner"]["display_name"]
-            }
-        return playlists
-
 
 if __name__ == "__main__":
-    playlist = Playlist("0ZHdYdAKTl3hxNUGvhBki6")
+    pl = Playlist("0ZHdYdAKTl3hxNUGvhBki6")
