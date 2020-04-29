@@ -75,95 +75,15 @@
                 </div>
           </div>
 
-    <div class="worker" id='single-playlist'> 
+    <div class="worker" id='single-playlist'>
                 <h2> <a id='playlist-title'></a> </h2>
                 <img class='spinner2' width='100' alt='spinner' src='static/images/ajaxSpinner.gif'>
                 <div id='single-playlist-contents'>
                     <div class="panel panel-default">
                         <div class="panel-body">
-                            <div class='btn-group pull-right'>
-                              <button id='save' type='button' class='btn btn-primary btn-sm has-spinner'><i class="fa fa-spinner fa-spin"></i> Save New Playlist</button>
-                              <button id='saveDropdown' class='btn btn-primary btn-sm dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
-                                <span class='caret'></span>
-                                <span class='sr-only'>Toggle Dropdown</span>
-                              </button>
-                              <ul class='dropdown-menu'>
-                                <li><a id='dropSave' href='#'>Save New Playlist</a></li>
-                              </ul>
-                            </div>
                             <a class="btn btn-primary btn-sm pull-left" id='pick' role="button">back</a>
                         </div>
                     </div>
-                    <div class="panel panel-default new-playlist-top">
-                        <div class="panel-body">
-                            <div class="form-inline">
-                                <div class="form-group">
-                                    <label >Name of New Playlist: </label>
-                                    <input id="name" type="text" class="form-control" placeholder="Pomodoro">
-                                </div>
-                                <div class="form-group">
-                                    <label >No. of Songs: </label>
-                                    <input id="numSongs" type="number" class="form-control" placeholder="15">
-                                </div>
-                                <!-- <button id="filter-button" class="btn btn-default btn-sm">Filter</button> -->
-                            </div>
-                        </div>
-                        <div class="container metric">
-                            <div class="row">
-                                <div class="col-xs-6">
-                                    <div class="slider-label">
-                                      <label>Danceability</label>
-                                    </div>
-                                </div>
-                                <div class="col-xs-6">
-                                    <div class="slidecontainer">
-                                      <input type="range" min="1" max="100" value="50" class="slider" id="danceability">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="container metric">
-                            <div class="row">
-                                <div class="col-xs-6">
-                                    <div class="slider-label">
-                                      <label>Energy</label>
-                                    </div>
-                                </div>
-                                <div class="col-xs-6">
-                                    <div class="slidecontainer">
-                                      <input type="range" min="1" max="100" value="50" class="slider" id="energy">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="container metric">
-                            <div class="row">
-                                <div class="col-xs-6">
-                                    <div class="slider-label">
-                                      <label>Acousticness</label>
-                                    </div>
-                                </div>
-                                <div class="col-xs-6">
-                                    <div class="slidecontainer">
-                                      <input type="range" min="1" max="100" value="50" class="slider" id="acousticness">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="container metric">
-                            <div class="row">
-                                <div class="col-xs-6">
-                                    <div class="slider-label">
-                                      <label>Valence (Positivity)</label>
-                                    </div>
-                                </div>
-                                <div class="col-xs-6">
-                                    <div class="slidecontainer">
-                                      <input type="range" min="1" max="100" value="50" class="slider" id="valence">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                 </div>
           </div>
       </div>
@@ -264,11 +184,7 @@ function showPlaylists() {
     $(".worker").hide();
     $("#playlists").show();
 }
-function confirmation(link){
-    $("#single-playlist-contents").hide();
-    $("#playlist-title").text("Playlist successfully created! Click here to see it").attr('href',link);
 
-}
 function savePlaylist(){
     $("#single-playlist-contents").hide();
     $("#playlist-title").text("Saving playlist...");
@@ -356,7 +272,7 @@ function fetchPlaylists(uid, callback) {
         }
 
     });
-    
+
 }
 function fetchCurrentUserProfile(callback) {
     var url = 'https://api.spotify.com/v1/me';
@@ -516,13 +432,6 @@ $(document).ready(
                 get_Playlists();
             });
         }
-        $("#test").on('click', function() {
-            get_Playlists();
-        });
-
-        $("#save,#dropSave").on('click', function() {
-            savePlaylist();
-        });
 
         $("#dropOverwrite").on('click', function() {
             savePlaylist(curPlaylist, false);

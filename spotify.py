@@ -8,30 +8,11 @@ load_dotenv()
 
 
 class Playlist:
-    sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
-
-    def __init__(self, playlist_id: str):
+    def __init__(self, playlist_id: str, sp):
+        self.sp = sp
         self.playlist_id = playlist_id
         self.__load_playlist(playlist_id)
         self.played = set()
-
-    @classmethod
-    def new(cls, name: str, user: str):
-        res = cls.sp.user_playlist_create(user, name)
-        return Playlist(res["id"])
-
-    @staticmethod
-    def all(self):
-        playlist_objects = self.sp.current_user_playlists()["items"]
-        playlists = {}
-        for playlist in playlist_objects:
-            playlists[playlist["id"]] = {
-                "uri": playlist["uri"],
-                "name": playlist["name"],
-                "tracks": playlist["tracks"]["total"],
-                "owner": playlist["owner"]["display_name"]
-            }
-        return playlists
 
     def __load_playlist(self, playlist_id: str):
         playlist = self.sp.playlist(playlist_id)
@@ -50,27 +31,43 @@ class Playlist:
     def replace_tracks(self, track_ids: List[str]):
         self.sp.user_playlist_replace_tracks(self.owner, self.playlist_id, track_ids)
 
+    def tracks_to_matrix(self):
+        matrix = {"labels": [], "data": []}
+        for _, track in self.tracks.items():
+            matrix["labels"].append(track.name)
+            matrix["data"].append(track.get_features())
+        return matrix
 
-class Spotify:
-    def __init__(self):
-        self.sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
-
-    def set_track_features(self, tracks: Dict[str, Track]):
-        track_ids = list(tracks.keys())
+    def set_track_features(self):
+        track_ids = list(self.tracks.keys())
         features = []
         chunks = [track_ids[i * 100:(i + 1) * 100] for i in range((len(track_ids) + 100 - 1) // 100)]
         for chunk in chunks:
             features.extend(self.sp.audio_features(chunk[:100]))
         for feature in features:
-            tracks[feature["id"]].set_features(feature)
-        return tracks
+            self.tracks[feature["id"]].set_features(feature)
 
-    def tracks_to_matrix(self, tracks):
-        matrix = {"labels": [], "data": []}
-        for _, track in tracks.items():
-            matrix["labels"].append(track.name)
-            matrix["data"].append(track.get_features())
-        return matrix
+
+class SpotifyClient(spotipy.Spotify):
+    def __init__(self, auth):
+        super().__init__(auth=auth)
+
+    def playlists(self):
+        playlist_objects = self.current_user_playlists()["items"]
+        playlists = {}
+        for playlist in playlist_objects:
+            playlists[playlist["id"]] = {
+                "uri": playlist["uri"],
+                "name": playlist["name"],
+                "tracks": playlist["tracks"]["total"],
+                "owner": playlist["owner"]["display_name"]
+            }
+        return playlists
+
+    def new_playlist(self, name: str, user: str):
+        res = self.user_playlist_create(user, name)
+        return Playlist(res["id"], self)
+
 
 
 if __name__ == "__main__":

@@ -18,10 +18,10 @@ class Cluster:
 
 
 class ClusterCollection:
-    def __init__(self, playlist: Playlist):
+    def __init__(self, playlist: Playlist, sp:Spotify):
         self.clusters = []
         self.curr_i = 0
-        self.sp = Spotify()
+        self.sp = sp
         self.generate_clusters(playlist)
 
     def generate_clusters(self, playlist: Playlist):
