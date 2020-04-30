@@ -1,7 +1,7 @@
 from collections import deque
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import normalize
-from spotify import Spotify, Playlist
+from spotify import SpotifyClient, Playlist
 import numpy as np
 
 NUM_CLUSTERS = 4
@@ -18,16 +18,15 @@ class Cluster:
 
 
 class ClusterCollection:
-    def __init__(self, playlist: Playlist, sp:Spotify):
+    def __init__(self, playlist: Playlist, sp:SpotifyClient):
         self.clusters = []
         self.curr_i = 0
         self.sp = sp
         self.generate_clusters(playlist)
 
     def generate_clusters(self, playlist: Playlist):
-        tracks = playlist.get_tracks()
-        self.sp.set_track_features(tracks)
-        matrix = self.sp.tracks_to_matrix(tracks)
+        playlist.set_track_features()
+        matrix = playlist.tracks_to_matrix()
         data_normalized = normalize(matrix["data"])
         kmeans = KMeans(n_clusters=NUM_CLUSTERS).fit(data_normalized)
         pred_clusters = kmeans.predict(matrix["data"])

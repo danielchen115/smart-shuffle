@@ -1,7 +1,6 @@
 import os
 import redis
 import pickle
-from spotify import Playlist
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -16,10 +15,11 @@ class Session:
         )
         self.user_id = user_id
 
-    def set_playlist(self, playlist: Playlist):
-        pickled_playlist = pickle.dumps(playlist)
-        self.r.hset(self.user_id, "playlist", pickled_playlist)
+    def set(self, obj_type: str, obj):
+        pickled = pickle.dumps(obj)
+        self.r.hset(self.user_id, obj_type, pickled)
 
-    def get_playlist(self):
-        playlist = self.r.hget(self.user_id, "playlist")
-        return pickle.loads(playlist)
+    def get(self, obj_type):
+        obj = self.r.hget(self.user_id, obj_type)
+        return pickle.loads(obj)
+

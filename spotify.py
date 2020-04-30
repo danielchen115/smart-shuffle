@@ -1,5 +1,6 @@
 import spotipy
 from track import Track
+from session import Session
 from typing import Dict, List
 
 
@@ -67,6 +68,7 @@ class Playlist:
 class Playback:
     def __init__(self, sp: SpotifyClient):
         self.sp = sp
+        self.user_id = sp.me()["id"]
         self.track = None
         self.progress = 0
         self.is_playing = False
@@ -85,7 +87,16 @@ class Playback:
         self.queue = [track.uri for track in tracks]
 
     def play(self):
-        self.sp.start_playback(uris=self.queue)
+        self.sp.start_playback()
 
     def pause(self):
         self.sp.pause_playback()
+
+    def skip(self):
+        session = Session(self.user_id)
+        playlist = session.get("playlist")
+        prev_skip_i = self.queue.index(self.track.uri)
+        self.update_state()
+        curr_i = self.queue.index(self.track.uri)
+        playlist.played.update(self.queue[prev_skip_i:curr_i + 1])
+
