@@ -1,14 +1,30 @@
 import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
 from track import Track
-from dotenv import load_dotenv
 from typing import Dict, List
 
-load_dotenv()
+
+class SpotifyClient(spotipy.Spotify):
+    def __init__(self, auth):
+        super().__init__(auth=auth)
+
+    def get_playlists(self):
+        playlist_objects = self.current_user_playlists()["items"]
+        playlists = {}
+        for playlist in playlist_objects:
+            playlists[playlist["id"]] = {
+                "uri": playlist["uri"],
+                "name": playlist["name"],
+                "tracks": playlist["tracks"]["total"],
+                "owner": playlist["owner"]["display_name"]
+            }
+        return playlists
+
+    def get_playlist(self, playlist_id):
+        return Playlist(playlist_id, self)
 
 
 class Playlist:
-    def __init__(self, playlist_id: str, sp):
+    def __init__(self, playlist_id: str, sp: SpotifyClient):
         self.sp = sp
         self.playlist_id = playlist_id
         self.__load_playlist(playlist_id)
@@ -18,15 +34,15 @@ class Playlist:
         playlist = self.sp.playlist(playlist_id)
         self.name = playlist["name"]
         self.owner = playlist["owner"]
-        self.tracks = playlist["tracks"]
+        self.tracks = {}
+        for track in playlist["tracks"]:
+            self.tracks.append(Track(track))
         self.uri = playlist["uri"]
 
-    def get_tracks(self):
-        tracks = {}
+    def __load_tracks(self):
         track_objects = self.sp.playlist_tracks(playlist_id=self.playlist_id, fields="items(track(id,name))")["items"]
         for track_obj in track_objects:
-            tracks[track_obj["track"]["id"]] = Track(track_obj["track"]["id"], track_obj["track"]["name"])
-        return tracks
+            self.tracks[track_obj["track"]["id"]] = Track(track_obj["track"])
 
     def replace_tracks(self, track_ids: List[str]):
         self.sp.user_playlist_replace_tracks(self.owner, self.playlist_id, track_ids)
@@ -48,27 +64,28 @@ class Playlist:
             self.tracks[feature["id"]].set_features(feature)
 
 
-class SpotifyClient(spotipy.Spotify):
-    def __init__(self, auth):
-        super().__init__(auth=auth)
+class Playback:
+    def __init__(self, sp: SpotifyClient):
+        self.sp = sp
+        self.track = None
+        self.progress = 0
+        self.is_playing = False
+        self.queue = []
+        self.update_state()
 
-    def playlists(self):
-        playlist_objects = self.current_user_playlists()["items"]
-        playlists = {}
-        for playlist in playlist_objects:
-            playlists[playlist["id"]] = {
-                "uri": playlist["uri"],
-                "name": playlist["name"],
-                "tracks": playlist["tracks"]["total"],
-                "owner": playlist["owner"]["display_name"]
-            }
-        return playlists
+    def update_state(self):
+        state = self.sp.current_playback()
+        if not state:
+            return
+        self.track = Track(state["item"])
+        self.progress = state["progress_ms"]
+        self.is_playing = state["is_playing"]
 
-    def new_playlist(self, name: str, user: str):
-        res = self.user_playlist_create(user, name)
-        return Playlist(res["id"], self)
+    def new_queue(self, tracks: List[Track]):
+        self.queue = [track.uri for track in tracks]
 
+    def play(self):
+        self.sp.start_playback(uris=self.queue)
 
-
-if __name__ == "__main__":
-    pl = Playlist("0ZHdYdAKTl3hxNUGvhBki6")
+    def pause(self):
+        self.sp.pause_playback()
