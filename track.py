@@ -2,7 +2,7 @@ class Track:
     def __init__(self, obj):
         self.id = obj["id"]
         self.name = obj["name"]
-        self.duration = obj["duration"]
+        self.duration = obj["duration_ms"]
         self.uri = obj["uri"]
 
         self.danceability = 0

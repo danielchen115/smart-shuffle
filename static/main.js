@@ -60,6 +60,7 @@ function showPlaylists() {
 }
 
 function fetchSinglePlaylist(playlist) {
+    console.log(playlist);
     $(".worker").hide();
     $("#single-playlist").show();
     $("#single-playlist-contents").hide();
@@ -68,25 +69,18 @@ function fetchSinglePlaylist(playlist) {
     window.scrollTo(0,0);
     songTable.clear();
     $("#playlist-title").text(playlist['name']);
-    $("#playlist-title").attr('value', playlists['uri']);
+    $("#playlist-title").attr('value', playlist['uri']);
     $(".spinner2").hide();
     curPlaylist = playlist['uri'];
-    info("");
-    $("#single-playlist-contents").show();
-}
-
-function fetchLibrary() {
-    $(".worker").hide();
-    $("#single-playlist").show();
-    $("#single-playlist-contents").hide();
-    $(".spinner2").show();
-    $("#song-table tbody").empty();
-    window.scrollTo(0,0);
-    songTable.clear();
-    $("#playlist-title").text("All Saved Songs");
-    $(".spinner2").hide();
-    curPlaylist = "";
-    info("");
+    $.ajax({
+        headers :{
+            username: curUserID,
+            token: accessToken
+        },
+        data: { playlist_uri: playlist['uri'] },
+        type : 'PUT',
+        url : '/set-playlist',
+    });
     $("#single-playlist-contents").show();
 }
 
@@ -94,7 +88,6 @@ function fetchPlaylists(uid, callback) {
     $("#playlist-list tbody").empty();
     $(".prompt").hide();
     $(".spinner").show();
-
     info("Getting your playlists");
     $.ajax({
         headers :{
@@ -106,7 +99,6 @@ function fetchPlaylists(uid, callback) {
         success: function (data) {
             playlistLoaded(data.playlists)
         }
-
     });
 
 }
@@ -183,12 +175,9 @@ function initTable() {
 }
 
 $(document).ready(
-
     function() {
         songTable = initTable();
         var args = parseArgs();
-
-
         if ('error' in args) {
             error("Sorry, I can't read your playlists from Spotify without authorization");
             $("#go").show();
@@ -215,19 +204,12 @@ $(document).ready(
                 get_Playlists();
             });
         }
-
-        $("#dropOverwrite").on('click', function() {
-            savePlaylist(curPlaylist, false);
-        });
-
         $("#allSongs").on('click', function() {
             fetchLibrary();
         });
-
         $("#pick").on('click', function() {
             showPlaylists();
         });
-
         $('#min-bpm,#max-bpm,#include-double').on('keyup change', function() {
             songTable.draw();
         });

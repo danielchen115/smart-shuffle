@@ -36,10 +36,15 @@ class Playlist:
         self.name = playlist["name"]
         self.owner = playlist["owner"]
         self.tracks = {}
-        for track in playlist["tracks"]:
+        for track_obj in playlist["tracks"]["items"]:
+            track = track_obj["track"]
             self.tracks[track["id"]] = (Track(track))
         self.set_track_features()
         self.uri = playlist["uri"]
+
+    @classmethod
+    def uri_to_id(cls, uri):
+        return uri.split(':')[-1]
 
     def __load_tracks(self):
         track_objects = self.sp.playlist_tracks(playlist_id=self.playlist_id, fields="items(track(id,name))")["items"]
