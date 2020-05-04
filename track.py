@@ -43,3 +43,6 @@ class Track:
             self.speechiness,
             # self.tempo,
         ]
+
+    def portion_played(self, progress):
+        return progress / self.duration

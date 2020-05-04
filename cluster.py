@@ -18,7 +18,7 @@ class Cluster:
 
 
 class ClusterCollection:
-    def __init__(self, playlist: Playlist, sp:SpotifyClient):
+    def __init__(self, playlist: Playlist, sp: SpotifyClient):
         self.clusters = []
         self.curr_i = 0
         self.sp = sp
@@ -40,7 +40,6 @@ class ClusterCollection:
         portion_left = 1 - portion_played
         for cluster in self.clusters:
             cluster.score += portion_left * cluster.get_distance(self.clusters[self.curr_i])
-        self.clusters.sort(key=lambda x: x.score, reverse=True)
 
     def get_highest_scored_cluster(self):
         max_i = 0
@@ -50,16 +49,14 @@ class ClusterCollection:
                 max_i = i
         return max_i
 
-    def create_track_queue(self):
-        q = deque()
-        for cluster in self.clusters:
-            q.extend(cluster.tracks)
+    def create_track_queue(self, exclude = None):
+        if not exclude:
+            exclude = set([])
+        clusters = sorted(self.clusters, key=lambda x: x.score, reverse=True)
+        q = []
+        for cluster in clusters:
+            for track in cluster:
+                if track not in exclude:
+                    q.append(track)
         return q
 
-
-if __name__ == "__main__":
-    pl = Playlist("0ZHdYdAKTl3hxNUGvhBki6")
-    col = ClusterCollection(pl)
-    q = col.create_track_queue()
-    clusters = col.clusters
-    print("hit")

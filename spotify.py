@@ -37,7 +37,8 @@ class Playlist:
         self.owner = playlist["owner"]
         self.tracks = {}
         for track in playlist["tracks"]:
-            self.tracks.append(Track(track))
+            self.tracks[track["id"]] = (Track(track))
+        self.set_track_features()
         self.uri = playlist["uri"]
 
     def __load_tracks(self):
@@ -95,8 +96,13 @@ class Playback:
     def skip(self):
         session = Session(self.user_id)
         playlist = session.get("playlist")
+        clusters = session.get("clusters")
         prev_skip_i = self.queue.index(self.track.uri)
         self.update_state()
         curr_i = self.queue.index(self.track.uri)
         playlist.played.update(self.queue[prev_skip_i:curr_i + 1])
+        clusters.update_scores(self.track.portion_played(self.progress))
+        queue = clusters.create_track_queue()
+        self.sp.start_playback(uris=[track.uri for track in queue])
+
 
