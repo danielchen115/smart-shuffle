@@ -91,6 +91,7 @@ class Playback:
 
     def new_queue(self, tracks: List[Track]):
         self.queue = [track.uri for track in tracks]
+        self.sp.start_playback(uris=self.queue)
 
     def play(self):
         self.sp.start_playback()
@@ -106,8 +107,10 @@ class Playback:
         self.update_state()
         curr_i = self.queue.index(self.track.uri)
         playlist.played.update(self.queue[prev_skip_i:curr_i + 1])
-        clusters.update_scores(self.track.portion_played(self.progress))
-        queue = clusters.create_track_queue()
-        self.sp.start_playback(uris=[track.uri for track in queue])
+        clusters.update_scores(self.track, self.track.portion_played(self.progress))
+        queue = clusters.create_track_queue(playlist.played)
+        session.set("playlist", playlist)
+        session.set("clusters", clusters)
+        self.new_queue(queue)
 
 

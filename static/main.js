@@ -16,7 +16,8 @@ function info(msg) {
 
 function authorizeUser() {
     var scopes = 'user-library-read playlist-read-private playlist-read-collaborative user-modify-playback-state user-read-cur' +
-        ' user-read-playback-state app-remote-control user-library-read playlist-modify-public';
+        'rently-playing user-read-playback-state user-top-read user-read-recently-played app-remote-control streaming' +
+        ' user-read-private user-library-read user-library-modify playlist-modify-public playlist-modify-private';
 
     var url = 'https://accounts.spotify.com/authorize?client_id=' + SPOTIFY_CLIENT_ID +
         '&response_type=token' +

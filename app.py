@@ -28,9 +28,10 @@ def set_playlist():
     playlist_uri = request.form["playlist_uri"]
     playlist = sp.get_playlist(Playlist.uri_to_id(playlist_uri))
     Session(user).set("playlist", playlist)
-    Session(user).set("clusters", ClusterCollection(playlist, sp))
+    clusters = ClusterCollection(playlist, sp)
+    Session(user).set("clusters", clusters)
     playback = Playback(sp)
-    playback.new_queue(list(playlist.tracks.values()))
+    playback.new_queue(clusters.create_track_queue())
     Session(user).set("playback", playback)
     return jsonify(success=True)
 

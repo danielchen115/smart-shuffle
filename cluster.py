@@ -2,6 +2,7 @@ from collections import deque
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import normalize
 from spotify import SpotifyClient, Playlist
+from track import Track
 import numpy as np
 
 NUM_CLUSTERS = 4
@@ -36,10 +37,17 @@ class ClusterCollection:
                                   set((np.array(matrix["labels"])[np.where(pred_clusters == cluster)]).tolist()))
             self.clusters.append(new_cluster)
 
-    def update_scores(self, portion_played: float):
+    def update_scores(self, curr_track: Track, portion_played: float):
+        self.curr_i = self.get_track_cluster(curr_track)
         portion_left = 1 - portion_played
-        for cluster in self.clusters:
-            cluster.score += portion_left * cluster.get_distance(self.clusters[self.curr_i])
+        for i in range(len(self.clusters)):
+            self.clusters[i].score += portion_left * self.clusters[i].get_distance(self.clusters[self.curr_i])
+
+    def get_track_cluster(self, track: Track):
+        for i, cluster in enumerate(self.clusters):
+            if track in cluster.tracks:
+                return i
+        return -1
 
     def get_highest_scored_cluster(self):
         max_i = 0
