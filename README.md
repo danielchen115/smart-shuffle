@@ -2,7 +2,7 @@
 A heuristic-based "shuffle" play that tunes itself based on skipped songs and listening times.
 
 ## Approach
-Popular recommender systems such as content-based and collaborative filtering rely on a history of user behaviour and/or the behaviour of other users. However this is not always feasible.
+Popular recommender systems such as content-based and collaborative filtering rely on a history of user behaviour and/or the behaviour of other users. However, this is not always feasible.
 
 Smart Shuffle demonstrates a recommender system that does **not** rely on a dataset and can quickly ramp up from a cold start using a heuristic scoring system. Its implementation is described below:
 
