@@ -209,5 +209,8 @@ view) */
   background: #4CAF50;
   cursor: pointer;
         vertical-align: bottom;
+}
 
+.playback {
+    position: relative;
 }

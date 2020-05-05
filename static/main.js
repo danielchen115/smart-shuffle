@@ -2,6 +2,7 @@
 var accessToken = null;
 var curUserID = null;
 var curPlaylist = null;
+var is_playing = false;
 var audio = $("<audio>");
 var songTable;
 
@@ -15,8 +16,7 @@ function info(msg) {
 
 function authorizeUser() {
     var scopes = 'user-library-read playlist-read-private playlist-read-collaborative user-modify-playback-state user-read-cur' +
-        'rently-playing user-read-playback-state user-top-read user-read-recently-played app-remote-control streaming' +
-        ' user-read-private user-library-read user-library-modify playlist-modify-public playlist-modify-private';
+        ' user-read-playback-state app-remote-control user-library-read playlist-modify-public';
 
     var url = 'https://accounts.spotify.com/authorize?client_id=' + SPOTIFY_CLIENT_ID +
         '&response_type=token' +
@@ -60,7 +60,6 @@ function showPlaylists() {
 }
 
 function fetchSinglePlaylist(playlist) {
-    console.log(playlist);
     $(".worker").hide();
     $("#single-playlist").show();
     $("#single-playlist-contents").hide();
@@ -204,11 +203,31 @@ $(document).ready(
                 get_Playlists();
             });
         }
-        $("#allSongs").on('click', function() {
-            fetchLibrary();
-        });
         $("#pick").on('click', function() {
             showPlaylists();
+        });
+        $("#play-pause").on('click', function () {
+            $.ajax({
+                headers: {
+                    username: curUserID,
+                    token: accessToken
+                },
+                type: 'PUT',
+                url: is_playing? '/pause' : '/play',
+                success: function () {
+                    is_playing = !is_playing
+                },
+            });
+        });
+        $("#skip").on('click', function () {
+            $.ajax({
+                headers: {
+                    username: curUserID,
+                    token: accessToken
+                },
+                type: 'PUT',
+                url: '/skip',
+            });
         });
         $('#min-bpm,#max-bpm,#include-double').on('keyup change', function() {
             songTable.draw();

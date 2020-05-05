@@ -49,13 +49,13 @@ class ClusterCollection:
                 max_i = i
         return max_i
 
-    def create_track_queue(self, exclude = None):
+    def create_track_queue(self, exclude=None):
         if not exclude:
             exclude = set([])
         clusters = sorted(self.clusters, key=lambda x: x.score, reverse=True)
         q = []
         for cluster in clusters:
-            for track in cluster:
+            for track in cluster.tracks:
                 if track not in exclude:
                     q.append(track)
         return q

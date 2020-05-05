@@ -40,6 +40,9 @@ def play():
     user = request.headers.get("username")
     playback = Session(user).get("playback")
     playback.play()
+    res = jsonify(success=True)
+    res.status_code = 200
+    return res
 
 
 @app.route("/pause", methods=["PUT"])
@@ -47,6 +50,9 @@ def pause():
     user = request.headers.get("username")
     playback = Session(user).get("playback")
     playback.pause()
+    res = jsonify(success=True)
+    res.status_code = 200
+    return res
 
 
 @app.route("/skip", methods=["PUT"])
@@ -54,6 +60,9 @@ def skip():
     user = request.headers.get("username")
     playback = Session(user).get("playback")
     playback.skip()
+    res = jsonify(success=True)
+    res.status_code = 200
+    return res
 
 
 if __name__ == "__main__":

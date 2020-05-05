@@ -57,7 +57,7 @@ class Playlist:
     def tracks_to_matrix(self):
         matrix = {"labels": [], "data": []}
         for _, track in self.tracks.items():
-            matrix["labels"].append(track.name)
+            matrix["labels"].append(track)
             matrix["data"].append(track.get_features())
         return matrix
 
