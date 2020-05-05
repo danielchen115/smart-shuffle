@@ -1,7 +1,12 @@
 # Smart Shuffle
-A heuristic-based "Shuffle" play that tunes itself based on listening times of previous songs. Finds out what you like and don't like to pick the next song accordingly.
+A heuristic-based "shuffle" play that tunes itself based on skipped songs and listening times.
 
 ## Approach
-First, songs are clustered based on its audio features (energy, danceability, vibe, etc.) using k-means clustering.
-Each cluster holds a score to determine how _likeable_ its songs are to the user's current listening patterns. If a song is skipped,
-each cluster's score is updated based on its distance from the current cluster. The next song is then picked from the highest score cluster.
+Popular recommender systems such as content-based and collaborative filtering rely on a history of user behaviour and/or the behaviour of other users. However this is not always feasible.
+
+Smart Shuffle demonstrates a recommender system that does **not** rely on a dataset and can quickly ramp up from a cold start using a heuristic scoring system. Its implementation is described below:
+
+1. Tracks are clustered based on its audio features (energy, danceability, valence, etc.) using k-means clustering. Each cluster is given an initial score of 0.
+2. After a track is skipped, the score of each cluster is increased by _portion_skipped * distance from track_. The distance indicates how different the current track is from the tracks within each cluster.
+3. Reorder the track queue from the highest to lowest score.
+4. Repeat 2 and 3 on each skip.
