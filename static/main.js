@@ -2,7 +2,7 @@
 var accessToken = null;
 var curUserID = null;
 var curPlaylist = null;
-var is_playing = false;
+var is_playing = true;
 var audio = $("<audio>");
 var songTable;
 
@@ -78,8 +78,11 @@ function fetchSinglePlaylist(playlist) {
             token: accessToken
         },
         data: { playlist_uri: playlist['uri'] },
-        type : 'PUT',
-        url : '/set-playlist',
+        type: 'PUT',
+        url: '/set-playlist',
+        success: function() {
+            is_playing = true;
+        }
     });
     $("#single-playlist-contents").show();
 }
