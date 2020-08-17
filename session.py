@@ -9,7 +9,6 @@ class Session:
     def __init__(self, user_id: str):
         self.r = redis.Redis(
             host=os.getenv("REDIS_HOST"),
-            host=os.getenv("REDIS_PASSWORD"),
             port=os.getenv("REDIS_PORT"),
             db=os.getenv("REDIS_DB"),
             decode_responses=False
