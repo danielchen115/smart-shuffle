@@ -11,6 +11,7 @@ class Session:
             host=os.getenv("REDIS_HOST"),
             port=os.getenv("REDIS_PORT"),
             db=os.getenv("REDIS_DB"),
+            password=os.getenv("REDIS_PASSWORD"),
             decode_responses=False
         )
         self.user_id = user_id
