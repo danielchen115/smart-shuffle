@@ -1,5 +1,8 @@
 # Smart Shuffle
 A heuristic-based "shuffle" play that tunes itself based on skipped songs and listening times.
+Try it out here: https://smart-shuffle.herokuapp.com/
+
+*Note* Your Spotify app must be on. If selecting a playlist on SmartShuffle does not begin playing it, start playing the playlist from your Spotify app instead.
 
 ## Approach
 Popular recommender systems such as content-based and collaborative filtering rely on a history of user behaviour and/or the behaviour of other users. However, this is not always feasible.
